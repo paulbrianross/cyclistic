@@ -327,9 +327,9 @@ FROM
 
 # IV. Summary of Analysis
 
-To see how this analysis unfolds, please follow the story in [the accompanying Tableau viz](https://public.tableau.com/app/profile/paulbrianross/viz/GoogleDataAnalyticsCapstoneCyclisticCaseStudy/story).
+To see how this analysis unfolded, please follow the story in [the accompanying Tableau viz](https://public.tableau.com/app/profile/paulbrianross/viz/GoogleDataAnalyticsCapstoneCyclisticCaseStudy/story).
 
-Although Members and Casuals have some similarities:
+Members and Casuals have some similarities:
 
 * Both groups enjoy riding on weekends in roughly even numbers (although Casual Rides outnumber Member Rides during the warmer months, and vice versa).
 
