@@ -105,18 +105,18 @@ SELECT
     DATETIME_DIFF(ended_at, started_at, SECOND) AS duration_seconds
     ,*
 FROM (
-SELECT '202007' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202007_tripdata` UNION ALL
-SELECT '202008' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202008_tripdata` UNION ALL
-SELECT '202009' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202009_tripdata` UNION ALL
-SELECT '202010' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202010_tripdata` UNION ALL
-SELECT '202011' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202011_tripdata` UNION ALL
-SELECT '202012' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202012_tripdata` UNION ALL
-SELECT '202101' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202101_tripdata` UNION ALL
-SELECT '202102' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202102_tripdata` UNION ALL
-SELECT '202103' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202103_tripdata` UNION ALL
-SELECT '202104' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202104_tripdata` UNION ALL
-SELECT '202105' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202105_tripdata` UNION ALL
-SELECT '202106' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202106_tripdata` )
+SELECT '202007' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202007_tripdata` UNION ALL
+SELECT '202008' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202008_tripdata` UNION ALL
+SELECT '202009' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202009_tripdata` UNION ALL
+SELECT '202010' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202010_tripdata` UNION ALL
+SELECT '202011' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202011_tripdata` UNION ALL
+SELECT '202012' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202012_tripdata` UNION ALL
+SELECT '202101' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202101_tripdata` UNION ALL
+SELECT '202102' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202102_tripdata` UNION ALL
+SELECT '202103' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202103_tripdata` UNION ALL
+SELECT '202104' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202104_tripdata` UNION ALL
+SELECT '202105' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202105_tripdata` UNION ALL
+SELECT '202106' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202106_tripdata` )
 ```
 
 ##### 3.2 What steps have you taken to ensure that your data is clean?
@@ -212,15 +212,15 @@ SELECT
     ,SUM(flag_round_trip) AS count_round
     ,ROUND(SAFE_DIVIDE(SUM(flag_round_trip),COUNT(1)),2) AS rate_round
     ,COUNT(DISTINCT started_date) AS count_dates
-    ,ROUND(AVG(duration_seconds)/60,1) as mean_duration
-    ,ROUND(median(ARRAY_AGG(duration_seconds ORDER BY duration_seconds))/60,1) AS median_duration
+    ,ROUND(AVG(duration_seconds)/60,1) as mean_mins
+    ,ROUND(median(ARRAY_AGG(duration_seconds ORDER BY duration_seconds))/60,1) AS median_mins
 FROM
     `cap.clean_tripdata`
 GROUP BY
     member_casual
 ```
 
-| member_casual | count_rides    | count_round | rate_round | count_dates | mean_duration | median_duration |
+| member_casual | count_rides    | count_round | rate_round | count_dates | mean_mins | median_mins |
 |---------------|----------------|------------------|-----------------|-------------|---------------|-----------------|
 |     Casual    |     1,704,687    |        256,519    |         0.15    |      365    |       34.5    |         20.1    |
 |     Member    |     2,256,068    |         85,824    |         0.04    |      365    |       14.9    |         11.1    |
