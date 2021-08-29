@@ -16,9 +16,11 @@
 5. *Supporting visualizations and key findings*
 6. *Your top three recommendations based on your analysis*
 
-Deliverables 5-6 can be found in [the accompanying Tableau visualization](https://public.tableau.com/app/profile/paulbrianross/viz/GoogleDataAnalyticsCapstoneCyclisticCaseStudy/story). Deliverables 1-4 can be found below.
+Deliverables 5-6 can be found in [the accompanying Tableau viz](https://public.tableau.com/app/profile/paulbrianross/viz/GoogleDataAnalyticsCapstoneCyclisticCaseStudy/story). Deliverables 1-4 can be found below.
 
-We begin with the first deliverable, a statement of the business task, which is: Analyze the Cyclistic historical bike trip data for Director of Marketing Lily Moreno to identify trends and answer the question, **"How do Members and Casuals use Cyclistic bikes differently?"**
+We begin with the first deliverable, a statement of the business task, which is:
+
+Analyze the Cyclistic historical bike trip data for Director of Marketing Lily Moreno to identify trends and answer the question, **"How do Members and Casuals use Cyclistic bikes differently?"**
 
 # II. Prepare
 
@@ -325,7 +327,7 @@ FROM
 
 # IV. Summary of Analysis
 
-To see how this analysis unfolds, please follow the story in [the accompanying Tableau visualization](https://public.tableau.com/app/profile/paulbrianross/viz/GoogleDataAnalyticsCapstoneCyclisticCaseStudy/story).
+To see how this analysis unfolds, please follow the story in [the accompanying Tableau viz](https://public.tableau.com/app/profile/paulbrianross/viz/GoogleDataAnalyticsCapstoneCyclisticCaseStudy/story).
 
 Although Members and Casuals have some similarities:
 
@@ -345,7 +347,7 @@ Key differences between the two groups include:
 
 # V. Recommendations
 
-To understand how these recommendations were reached, please follow the story in [the accompanying Tableau visualization](https://public.tableau.com/app/profile/paulbrianross/viz/GoogleDataAnalyticsCapstoneCyclisticCaseStudy/story).
+To understand how these recommendations were reached, please follow the story in [the accompanying Tableau viz](https://public.tableau.com/app/profile/paulbrianross/viz/GoogleDataAnalyticsCapstoneCyclisticCaseStudy/story).
 
 1. Every weeknight evening between 3-9 PM, the day's largest surge of Members start mostly One Way Rides home from work. During the same hours (at least during the warmer months), the day's largest surge of Casuals also start mostly One Way Rides, many from the same stations that Members are using, and we can identify those stations! These are the Casuals who likely have the most to gain from membership, and so it these Casuals who we highly recommend as a target market.
   
