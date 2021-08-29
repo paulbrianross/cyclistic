@@ -100,23 +100,23 @@ With that in mind, we UNION the 12 monthly tables into a single table (and add d
 
 ``` sql
 -- 4,460,151 rows
-CREATE OR REPLACE TABLE `cap.union_tripdata` AS
+CREATE OR REPLACE TABLE cap.union_tripdata AS
 SELECT
     DATETIME_DIFF(ended_at, started_at, SECOND) AS duration_seconds
     ,*
 FROM (
-SELECT '202007' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202007_tripdata` UNION ALL
-SELECT '202008' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202008_tripdata` UNION ALL
-SELECT '202009' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202009_tripdata` UNION ALL
-SELECT '202010' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202010_tripdata` UNION ALL
-SELECT '202011' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202011_tripdata` UNION ALL
-SELECT '202012' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202012_tripdata` UNION ALL
-SELECT '202101' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202101_tripdata` UNION ALL
-SELECT '202102' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202102_tripdata` UNION ALL
-SELECT '202103' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202103_tripdata` UNION ALL
-SELECT '202104' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202104_tripdata` UNION ALL
-SELECT '202105' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202105_tripdata` UNION ALL
-SELECT '202106' AS filename,* EXCEPT (start_station_id, end_station_id) FROM `cap.202106_tripdata` )
+SELECT '202007' AS filename, * EXCEPT (start_station_id, end_station_id) FROM cap.202007_tripdata UNION ALL
+SELECT '202008' AS filename, * EXCEPT (start_station_id, end_station_id) FROM cap.202008_tripdata UNION ALL
+SELECT '202009' AS filename, * EXCEPT (start_station_id, end_station_id) FROM cap.202009_tripdata UNION ALL
+SELECT '202010' AS filename, * EXCEPT (start_station_id, end_station_id) FROM cap.202010_tripdata UNION ALL
+SELECT '202011' AS filename, * EXCEPT (start_station_id, end_station_id) FROM cap.202011_tripdata UNION ALL
+SELECT '202012' AS filename, * EXCEPT (start_station_id, end_station_id) FROM cap.202012_tripdata UNION ALL
+SELECT '202101' AS filename, * EXCEPT (start_station_id, end_station_id) FROM cap.202101_tripdata UNION ALL
+SELECT '202102' AS filename, * EXCEPT (start_station_id, end_station_id) FROM cap.202102_tripdata UNION ALL
+SELECT '202103' AS filename, * EXCEPT (start_station_id, end_station_id) FROM cap.202103_tripdata UNION ALL
+SELECT '202104' AS filename, * EXCEPT (start_station_id, end_station_id) FROM cap.202104_tripdata UNION ALL
+SELECT '202105' AS filename, * EXCEPT (start_station_id, end_station_id) FROM cap.202105_tripdata UNION ALL
+SELECT '202106' AS filename, * EXCEPT (start_station_id, end_station_id) FROM cap.202106_tripdata )
 ```
 
 ##### 3.2 What steps have you taken to ensure that your data is clean?
@@ -140,7 +140,7 @@ SELECT
     ,SUM(CASE WHEN UPPER(start_station_name) LIKE '%TEST%' THEN 1 ELSE 0 END) AS start_station_test
     ,SUM(CASE WHEN UPPER(end_station_name) LIKE '%TEST%' THEN 1 ELSE 0 END) AS end_station_test
 FROM
-    `cap.union_tripdata`
+    cap.union_tripdata
 ```
 
 All sums returned zero except the following:
@@ -158,7 +158,7 @@ And so we can clean up our working dataset by combining all of the filters above
 
 ``` SQL
 -- 3,960,755 rows
-CREATE OR REPLACE TABLE `cap.clean_tripdata` AS
+CREATE OR REPLACE TABLE cap.clean_tripdata AS
 SELECT
     CAST(started_at AS DATE) AS started_date
     ,TIME(EXTRACT(HOUR FROM started_at),0,0) AS started_hour
@@ -169,7 +169,7 @@ SELECT
     ,INITCAP(TRIM(member_casual)) AS member_casual
     ,* EXCEPT (ride_id, start_station_name, end_station_name, member_casual)
 FROM
-    `cap.union_tripdata`
+    cap.union_tripdata
 WHERE
     start_station_name IS NOT NULL
     AND end_station_name IS NOT NULL
@@ -215,7 +215,7 @@ SELECT
     ,ROUND(AVG(duration_seconds)/60,1) as mean_mins
     ,ROUND(median(ARRAY_AGG(duration_seconds ORDER BY duration_seconds))/60,1) AS median_mins
 FROM
-    `cap.clean_tripdata`
+    cap.clean_tripdata
 GROUP BY
     member_casual
 ```
@@ -241,7 +241,7 @@ SELECT
     ,MIN(started_date) as from_date
     ,MAX(started_date) AS to_date
 FROM
-    `cap.clean_tripdata`
+    cap.clean_tripdata
 GROUP BY
     member_casual
     ,rideable_type
@@ -274,7 +274,7 @@ Latitude & Longitude data are in need of a clean. For example, the following que
 SELECT      start_station_name
             ,count(distinct start_lat) as count_lat
             ,count(distinct start_lng) as count_lng
-FROM        `cap.clean_tripdata`
+FROM        cap.clean_tripdata
 GROUP BY    start_station_name
 HAVING      count(distinct start_lat) > 1000
             AND count(distinct start_lng) > 1000
@@ -284,25 +284,25 @@ One solution is to UNION all the start_station coordinates with the end_station 
 
 ``` SQL
 -- 7,921,510 rows, which is 2x COUNT of `cap.clean_tripdata` as expected
-CREATE OR REPLACE TABLE `cap.union_stations` AS
+CREATE OR REPLACE TABLE cap.union_stations AS
 SELECT  *
 FROM    (
     SELECT  start_station_name AS station_name
             ,start_lat AS station_lat
             ,start_lng AS station_lng
-    FROM    `cap.clean_tripdata` UNION ALL
+    FROM    cap.clean_tripdata UNION ALL
     SELECT  end_station_name AS station_name
             ,end_lat AS station_lat
             ,end_lng AS station_lng
-    FROM    `cap.clean_tripdata`)
+    FROM    cap.clean_tripdata)
 
 -- GROUP stations to calculate median latitude & longitude
-CREATE OR REPLACE TABLE `cap.group_stations` AS
+CREATE OR REPLACE TABLE cap.group_stations AS
 SELECT      station_name
             ,COUNT(1) AS count_rides
             ,median(ARRAY_AGG(station_lat ORDER BY station_lat)) AS median_lat
             ,median(ARRAY_AGG(station_lng ORDER BY station_lng)) AS median_lng
-FROM        `cap.union_stations`
+FROM        cap.union_stations
 GROUP BY    station_name
 ```
 
@@ -310,7 +310,7 @@ The final step is to LEFT JOIN the grouped stations to add the corrected coordin
 
 ``` SQL
 
-CREATE OR REPLACE TABLE `cap.export_tripdata` AS
+CREATE OR REPLACE TABLE cap.export_tripdata AS
 SELECT
     a.* EXCEPT (start_lat,start_lng,end_lat,end_lng)
     , s.median_lat as start_lat
@@ -318,9 +318,9 @@ SELECT
     , e.median_lat as end_lat
     , e.median_lng as end_lng
 FROM
-    `cap.clean_tripdata` a
-    LEFT JOIN `cap.group_stations` s on a.start_station_name = s.station_name
-    LEFT JOIN `cap.group_stations` e on a.end_station_name = e.station_name
+    cap.clean_tripdata a
+    LEFT JOIN cap.group_stations s on a.start_station_name = s.station_name
+    LEFT JOIN cap.group_stations e on a.end_station_name = e.station_name
 ```
 
 # IV. Summary of Analysis
