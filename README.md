@@ -26,14 +26,14 @@ We begin with the first deliverable, a statement of the business task: Analyze t
 
 ##### 2.1-2.2 Where is your data located? How is the data organized?
 
-Data was downloaded from [here](https://divvy-tripdata.s3.amazonaws.com/index.html). Data is organized into monthly CSV files. We have been asked to analyze the last 12 months.
+Data was downloaded from [here](https://divvy-tripdata.s3.amazonaws.com/index.html). Data is organized into monthly CSV files, and we will analyze the last 12 months.
 
 ##### 2.3 Are there issues with bias or credibility in this data? Does your data ROCC?
 
-* Reliable - data includes all rides over the last year (not just a sample) and so it's 100% representative of the population of Cyclistic riders over that period.
+* Reliable - data includes all rides over the last 12 months (not just a sample) and so it's 100% representative of the population of Cyclistic riders over that period.
 * Original - we are using an original data source.
 * Current - this dataset is updated monthly. It was last updated Jul 16, 2021.
-* Comprehensive - there's no personal identity info, so we can't identify individual riders or how many rides each has made. Nevertheless, we have plenty of useful data (see 2.6 below!)
+* Comprehensive - there's no personal identity info, so we can't identify individual riders or how many rides each has made. Nevertheless, we have plenty of useful data (see 2.6 below).
 
 ##### 2.4 How are you addressing licensing, privacy, and security?
 
@@ -59,11 +59,11 @@ Each row is flagged as Member/Casual (with no exceptions) which is exactly what 
 
 I identified problem data in the following categories:
 
-* Duplicate ride_ids - There were a small number (209) of ride_ids that appeared in both the 202011 and 202012 files.
+* Duplicate ride_ids - A small number (209) of ride_ids appeared in both the 202011 and 202012 files.
 * Rides with negative duration - indicate an error with data collection.
-* Rides lasting less than 60s - can be excluded per [this link](https://www.divvybikes.com/system-data) (because they are potentially false starts or users trying to re-dock a bike).
-* Rides lasting more than 24h - can be excluded per [this link](https://help.divvybikes.com/hc/en-us/articles/360033484791-What-if-I-keep-a-bike-out-too-long-) (because bikes not returned with 24 hours are considered lost or stolen).
-* Rides to or from TEST stations - can be excluding per [this link](https://www.divvybikes.com/system-data) (because they were staff trips to service and inspect the system).
+* Rides lasting less than 60s - can be excluded per [this link](https://www.divvybikes.com/system-data).
+* Rides lasting more than 24h - can be excluded per [this link](https://help.divvybikes.com/hc/en-us/articles/360033484791-What-if-I-keep-a-bike-out-too-long-).
+* Rides to or from TEST stations - can be excluding per [this link](https://www.divvybikes.com/system-data).
 * Rides to or from NULL stations - indicate an error with data collection.
 
 In 3.2 below, we filter out rides with durations outside of 60s-24h, and those rides to or from TEST or NULL stations, thereby:
@@ -105,18 +105,18 @@ SELECT
     DATETIME_DIFF(ended_at, started_at, SECOND) AS duration_seconds
     ,*
 FROM (
-SELECT '202007' AS file_name, * EXCEPT (start_station_id, end_station_id) FROM `cap.202007_tripdata` UNION ALL
-SELECT '202008' AS file_name, * EXCEPT (start_station_id, end_station_id) FROM `cap.202008_tripdata` UNION ALL
-SELECT '202009' AS file_name, * EXCEPT (start_station_id, end_station_id) FROM `cap.202009_tripdata` UNION ALL
-SELECT '202010' AS file_name, * EXCEPT (start_station_id, end_station_id) FROM `cap.202010_tripdata` UNION ALL
-SELECT '202011' AS file_name, * EXCEPT (start_station_id, end_station_id) FROM `cap.202011_tripdata` UNION ALL
-SELECT '202012' AS file_name, * EXCEPT (start_station_id, end_station_id) FROM `cap.202012_tripdata` UNION ALL
-SELECT '202101' AS file_name, * EXCEPT (start_station_id, end_station_id) FROM `cap.202101_tripdata` UNION ALL
-SELECT '202102' AS file_name, * EXCEPT (start_station_id, end_station_id) FROM `cap.202102_tripdata` UNION ALL
-SELECT '202103' AS file_name, * EXCEPT (start_station_id, end_station_id) FROM `cap.202103_tripdata` UNION ALL
-SELECT '202104' AS file_name, * EXCEPT (start_station_id, end_station_id) FROM `cap.202104_tripdata` UNION ALL
-SELECT '202105' AS file_name, * EXCEPT (start_station_id, end_station_id) FROM `cap.202105_tripdata` UNION ALL
-SELECT '202106' AS file_name, * EXCEPT (start_station_id, end_station_id) FROM `cap.202106_tripdata` )
+SELECT '202007' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202007_tripdata` UNION ALL
+SELECT '202008' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202008_tripdata` UNION ALL
+SELECT '202009' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202009_tripdata` UNION ALL
+SELECT '202010' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202010_tripdata` UNION ALL
+SELECT '202011' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202011_tripdata` UNION ALL
+SELECT '202012' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202012_tripdata` UNION ALL
+SELECT '202101' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202101_tripdata` UNION ALL
+SELECT '202102' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202102_tripdata` UNION ALL
+SELECT '202103' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202103_tripdata` UNION ALL
+SELECT '202104' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202104_tripdata` UNION ALL
+SELECT '202105' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202105_tripdata` UNION ALL
+SELECT '202106' AS filename, * EXCEPT (start_station_id, end_station_id) FROM `cap.202106_tripdata` )
 ```
 
 ##### 3.2 What steps have you taken to ensure that your data is clean?
@@ -209,8 +209,8 @@ CREATE TEMP FUNCTION median (arr ANY type) AS (
 SELECT
     member_casual
     ,COUNT(1) AS count_rides
-    ,SUM(flag_round_trip) AS count_round_trip
-    ,ROUND(SAFE_DIVIDE(SUM(flag_round_trip),COUNT(1)),2) AS rate_round_trip
+    ,SUM(flag_round_trip) AS count_round
+    ,ROUND(SAFE_DIVIDE(SUM(flag_round_trip),COUNT(1)),2) AS rate_round
     ,COUNT(DISTINCT started_date) AS count_dates
     ,ROUND(AVG(duration_seconds)/60,1) as mean_duration
     ,ROUND(median(ARRAY_AGG(duration_seconds ORDER BY duration_seconds))/60,1) AS median_duration
@@ -220,7 +220,7 @@ GROUP BY
     member_casual
 ```
 
-| member_casual | count_rides    | count_round_trip | rate_round_trip | count_dates | mean_duration | median_duration |
+| member_casual | count_rides    | count_round | rate_round | count_dates | mean_duration | median_duration |
 |---------------|----------------|------------------|-----------------|-------------|---------------|-----------------|
 |     Casual    |     1,704,687    |        256,519    |         0.15    |      365    |       34.5    |         20.1    |
 |     Member    |     2,256,068    |         85,824    |         0.04    |      365    |       14.9    |         11.1    |
@@ -252,12 +252,12 @@ ORDER BY
 
 | member_casual | rideable_type | count_rows | count_dates | from_date  | to_date    |
 |---------------|---------------|------------|-------------|------------|------------|
-| Casual        | docked_bike        |     956615 |         365 | 2020-07-01 | 2021-06-30 |
-| Casual        | electric_bike      |     301218 |         337 | 2020-07-29 | 2021-06-30 |
-| Casual        | classic_bike       |     446854 |         211 | 2020-12-02 | 2021-06-30 |
-| Member        | docked_bike        |    1052947 |         158 | 2020-07-01 | 2021-01-13 |
-| Member        | electric_bike      |     391855 |         337 | 2020-07-29 | 2021-06-30 |
-| Member        | classic_bike       |     811266 |         211 | 2020-12-02 | 2021-06-30 |
+| Casual        | docked_bike        |     956,615 |         365 | 2020-07-01 | 2021-06-30 |
+| Casual        | electric_bike      |     301,218 |         337 | 2020-07-29 | 2021-06-30 |
+| Casual        | classic_bike       |     446,854 |         211 | 2020-12-02 | 2021-06-30 |
+| Member        | docked_bike        |    1,052,947 |         158 | 2020-07-01 | 2021-01-13 |
+| Member        | electric_bike      |     391,855 |         337 | 2020-07-29 | 2021-06-30 |
+| Member        | classic_bike       |     811,266 |         211 | 2020-12-02 | 2021-06-30 |
 
 This table illustrates the different bikes used by Members and Casuals over the 12 months. Only Docked bikes were rideable on Jul 1, 2020, with Electric bikes becoming available on Jul 29, and Classic bikes not until Dec 2. Casuals continued to use all 3 types until the end of Jun 2021. Members, however, stopped using Docked bikes on Jan 13, 2021, and appear only to have used Classic and Electric bikes after that date. Thus, a comparison of Member and Casual preferences for rideable_type is troubled for these reasons:
 * Bike types available changed 4 times over the year (from 1 option, to 2, to 3, and then to different options for each group).
@@ -306,7 +306,7 @@ FROM        `cap.union_stations`
 GROUP BY    station_name
 ```
 
-The final step of SQL processing is to LEFT JOIN the grouped stations to add the corrected coordinates to the export dataset:
+The final step is to LEFT JOIN the grouped stations to add the corrected coordinates to the export dataset:
 
 ``` SQL
 
